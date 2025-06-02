@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -23,7 +22,7 @@
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
   <div class="max-w-md w-full bg-white shadow-lg rounded-xl p-6" id="loginCard">
     <div class="flex justify-center mb-4">
-      <img src="https://drive.google.com/uc?id=1yju2bwwLmKVV0k4Iy3auvEX98dKrzyWU" alt="Logo Sekolah" class="h-20">
+      <img src="logo.png" alt="Logo Sekolah" class="h-20">
     </div>
     <h1 class="text-2xl font-bold text-center mb-4 text-green-600">Pengumuman Kelulusan</h1>
     <p class="text-center mb-6">SD Negeri 2 Pasir Putih<br>Tahun Ajaran 2024/2025</p>
@@ -102,11 +101,11 @@
         dataSiswa.forEach(siswa => {
           adminTable.innerHTML += `
             <tr>
-              <td class="border px-2 py-1">\${siswa.nama}</td>
-              <td class="border px-2 py-1">\${siswa.nisn}</td>
-              <td class="border px-2 py-1">\${siswa.tempat}, \${siswa.tanggal}</td>
-              <td class="border px-2 py-1"><img src="\${siswa.foto}" class="h-12 w-12 object-cover rounded-full mx-auto"></td>
-              <td class="border px-2 py-1"><a href="\${siswa.skl}" target="_blank" class="text-blue-500 underline">Unduh</a></td>
+              <td class="border px-2 py-1">${siswa.nama}</td>
+              <td class="border px-2 py-1">${siswa.nisn}</td>
+              <td class="border px-2 py-1">${siswa.tempat}, ${siswa.tanggal}</td>
+              <td class="border px-2 py-1"><img src="${siswa.foto}" class="h-12 w-12 object-cover rounded-full mx-auto"></td>
+              <td class="border px-2 py-1"><a href="${siswa.skl}" target="_blank" class="text-blue-500 underline">Unduh</a></td>
             </tr>
           `;
         });
@@ -118,7 +117,7 @@
       if (siswa) {
         document.getElementById('loginCard').classList.add('hidden');
         namaSiswa.textContent = siswa.nama;
-        ttlSiswa.textContent = `\${siswa.tempat}, \${siswa.tanggal}`;
+        ttlSiswa.textContent = `${siswa.tempat}, ${siswa.tanggal}`;
         fotoSiswa.src = siswa.foto;
         downloadSKL.href = siswa.skl;
         resultDiv.classList.remove('hidden');
