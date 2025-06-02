@@ -1,0 +1,131 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pengumuman Kelulusan - SD Negeri 2 Pasir Putih</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to right, #c6f6d5, #fefcbf);
+    }
+    .celebration {
+      animation: confetti 2s ease-in-out infinite;
+    }
+    @keyframes confetti {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+  <div class="max-w-md w-full bg-white shadow-lg rounded-xl p-6" id="loginCard">
+    <div class="flex justify-center mb-4">
+      <img src="https://drive.google.com/uc?id=1yju2bwwLmKVV0k4Iy3auvEX98dKrzyWU" alt="Logo Sekolah" class="h-20">
+    </div>
+    <h1 class="text-2xl font-bold text-center mb-4 text-green-600">Pengumuman Kelulusan</h1>
+    <p class="text-center mb-6">SD Negeri 2 Pasir Putih<br>Tahun Ajaran 2024/2025</p>
+    <form id="loginForm" class="space-y-4">
+      <input type="text" id="nisn" placeholder="Masukkan NISN atau Username Admin" class="w-full px-4 py-2 border rounded focus:outline-none">
+      <input type="password" id="password" placeholder="Masukkan Password (Kosongkan jika siswa)" class="w-full px-4 py-2 border rounded focus:outline-none">
+      <button type="submit" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Login</button>
+    </form>
+  </div>
+
+  <div id="result" class="hidden max-w-md w-full mt-6 bg-white shadow-lg rounded-xl p-6 text-center">
+    <div class="celebration text-2xl font-bold text-green-700">Selamat! Kamu dinyatakan LULUS!</div>
+    <img id="fotoSiswa" src="" alt="Foto Siswa" class="mx-auto mt-4 rounded-full h-24 w-24 object-cover">
+    <h2 id="namaSiswa" class="text-xl mt-2 font-semibold"></h2>
+    <p id="ttlSiswa"></p>
+    <a id="downloadSKL" href="#" target="_blank" class="inline-block mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Download SKL</a>
+  </div>
+
+  <div id="adminPanel" class="hidden w-full max-w-4xl mt-10 bg-white shadow-lg rounded-xl p-6">
+    <h2 class="text-xl font-bold text-center mb-4 text-purple-700">Panel Admin</h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full table-auto border border-collapse">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="border px-2 py-1">Nama</th>
+            <th class="border px-2 py-1">NISN</th>
+            <th class="border px-2 py-1">TTL</th>
+            <th class="border px-2 py-1">Foto</th>
+            <th class="border px-2 py-1">SKL</th>
+          </tr>
+        </thead>
+        <tbody id="adminTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const resultDiv = document.getElementById('result');
+    const namaSiswa = document.getElementById('namaSiswa');
+    const ttlSiswa = document.getElementById('ttlSiswa');
+    const downloadSKL = document.getElementById('downloadSKL');
+    const fotoSiswa = document.getElementById('fotoSiswa');
+    const adminPanel = document.getElementById('adminPanel');
+    const adminTable = document.getElementById('adminTable');
+
+    let dataSiswa = [];
+
+    fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vQjRSqaXEAJliODSbbjNWbRwV9AyQwvVHVBfSwf6X14vhZswyfZU7o-0qTwdPmFS417OUyFzmmMq35O/pub?output=csv')
+      .then(res => res.text())
+      .then(csv => {
+        const lines = csv.split('\n').slice(1);
+        dataSiswa = lines.map(line => {
+          const cells = line.split(',');
+          return {
+            nama: cells[1],
+            nisn: cells[4],
+            tempat: cells[5],
+            tanggal: cells[6],
+            foto: cells[27],
+            skl: cells[30],
+          };
+        });
+      });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const nisnInput = document.getElementById('nisn').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (nisnInput === 'admin' && password === 'admin123') {
+        document.getElementById('loginCard').classList.add('hidden');
+        adminPanel.classList.remove('hidden');
+
+        adminTable.innerHTML = '';
+        dataSiswa.forEach(siswa => {
+          adminTable.innerHTML += `
+            <tr>
+              <td class="border px-2 py-1">\${siswa.nama}</td>
+              <td class="border px-2 py-1">\${siswa.nisn}</td>
+              <td class="border px-2 py-1">\${siswa.tempat}, \${siswa.tanggal}</td>
+              <td class="border px-2 py-1"><img src="\${siswa.foto}" class="h-12 w-12 object-cover rounded-full mx-auto"></td>
+              <td class="border px-2 py-1"><a href="\${siswa.skl}" target="_blank" class="text-blue-500 underline">Unduh</a></td>
+            </tr>
+          `;
+        });
+        return;
+      }
+
+      const siswa = dataSiswa.find(s => s.nisn === nisnInput);
+
+      if (siswa) {
+        document.getElementById('loginCard').classList.add('hidden');
+        namaSiswa.textContent = siswa.nama;
+        ttlSiswa.textContent = `\${siswa.tempat}, \${siswa.tanggal}`;
+        fotoSiswa.src = siswa.foto;
+        downloadSKL.href = siswa.skl;
+        resultDiv.classList.remove('hidden');
+      } else {
+        alert('NISN tidak ditemukan atau salah password.');
+      }
+    });
+  </script>
+</body>
+</html>
